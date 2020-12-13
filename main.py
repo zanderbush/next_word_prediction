@@ -99,3 +99,32 @@ def get_all_predictions(text_sentence, top_clean=5):
             'bart': bart,
             'electra': electra,
             'roberta': roberta}
+
+
+def get_all_predictions2(text_sentence, top_clean=5):
+
+    text = tokenizer.encode(text_sentence)
+    myinput, past = torch.tensor([text]), None
+    logits, past = model(myinput, past = past)
+    logits = logits[0,-1]
+    probabilities = torch.nn.functional.softmax(logits)
+    best_logits, best_indices = logits.topk(100)
+    best_words = [tokenizer.decode([idx.item()]) for idx in best_indices]
+    text.append(best_indices[0].item())
+    best_probabilities = probabilities[best_indices].tolist()
+    xlnet = best_words[0:100]
+    xlnet = xlnet
+
+    text = tokenizer2.encode(text_sentence)
+    myinput, past = torch.tensor([text]), None
+    logits, past = model2(myinput, past = past)
+    logits = logits[0,-1]
+    probabilities = torch.nn.functional.softmax(logits)
+    best_logits, best_indices = logits.topk(100)
+    best_words = [tokenizer2.decode([idx.item()]) for idx in best_indices]
+    text.append(best_indices[0].item())
+    best_probabilities = probabilities[best_indices].tolist()
+    bart = best_words[0:100]
+    bart = bart
+
+    return {'xlnet': xlnet, 'bart': bart}
